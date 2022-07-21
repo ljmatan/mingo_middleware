@@ -15,8 +15,6 @@ abstract class MinGOData {
         return false;
       },
     );
-    value.fuels.removeWhere((e) => e.name == null || e.providerId == null || e.fuelKindId == null);
-    value.fuels.removeWhere((f) => value.stations.where((s) => s.priceList.where((p) => p.fuelId == f.id).isNotEmpty).isEmpty);
     value.providers.removeWhere((p) => value.stations.where((s) => s.providerId == p.id).isEmpty);
     value.fuelTypes.removeWhere((e) => e.fuelKindId > 4);
     for (var station in value.stations) {
