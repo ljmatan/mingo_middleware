@@ -1,0 +1,53 @@
+import 'dart:async';
+import 'dart:convert';
+import 'dart:io';
+
+import 'package:shelf/shelf.dart';
+import 'package:shelf/shelf_io.dart';
+import 'package:shelf_router/shelf_router.dart';
+
+import 'api/app_data.dart';
+import 'api/provider.dart';
+import 'data/mingo.dart';
+
+final _router = Router()..get('/penalised-providers', _penalisedProviderHandler);
+
+Response _penalisedProviderHandler(Request req) {
+  return Response.ok(jsonEncode(MinGOData.penalisedProviders.map((e) => e.toJson()).toList()));
+}
+
+// ignore: unused_element
+late Timer _cacheRefreshTimer;
+
+void main(List<String> args) async {
+  final ip = InternetAddress.anyIPv4;
+
+  final handler = Pipeline().addMiddleware(logRequests()).addHandler(_router);
+
+  final port = int.parse(Platform.environment['PORT'] ?? '1609');
+  final server = await serve(handler, ip, port);
+  print('Server listening on port ${server.port}');
+
+  await AppDataApi.getAll();
+  print('Data received');
+  await ProvidersApi.setAllPricingInfo();
+  print('Pricing info received');
+
+  _cacheRefreshTimer = Timer.periodic(
+    const Duration(hours: 24),
+    (_) async {
+      try {
+        await AppDataApi.getAll();
+        print('Data received');
+        await ProvidersApi.setAllPricingInfo();
+        print('Pricing info received');
+      } catch (e) {
+        print('$e');
+        await AppDataApi.getAll();
+        print('Data received');
+        await ProvidersApi.setAllPricingInfo();
+        print('Pricing info received');
+      }
+    },
+  );
+}
