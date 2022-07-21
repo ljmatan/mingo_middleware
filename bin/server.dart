@@ -19,6 +19,20 @@ Response _penalisedProviderHandler(Request req) {
 // ignore: unused_element
 late Timer _cacheRefreshTimer;
 
+class InvalidSslOverride extends HttpOverrides {
+  @override
+  HttpClient createHttpClient(SecurityContext? context) {
+    return super.createHttpClient(context)
+      ..badCertificateCallback = (
+        X509Certificate cert,
+        String host,
+        int port,
+      ) {
+        return true;
+      };
+  }
+}
+
 void main(List<String> args) async {
   final ip = InternetAddress.anyIPv4;
 
@@ -27,6 +41,8 @@ void main(List<String> args) async {
   final port = int.parse(Platform.environment['PORT'] ?? '1609');
   final server = await serve(handler, ip, port);
   print('Server listening on port ${server.port}');
+
+  HttpOverrides.global = InvalidSslOverride();
 
   await AppDataApi.getAll();
   print('Data received');
