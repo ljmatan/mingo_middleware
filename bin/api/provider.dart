@@ -31,9 +31,6 @@ abstract class ProvidersApi {
             'lastUpdated': stationTrends[0].lastUpdated.toIso8601String(),
           });
         }
-        print(stationTrends.first.lastUpdated.toIso8601String());
-        print(stationTrends.last.lastUpdated.toIso8601String());
-        print('Got trends for ${MinGOData.instance.stations[i].id}');
       } catch (e) {
         print('Failed to get for ${MinGOData.instance.stations[i].id}: $e');
       }

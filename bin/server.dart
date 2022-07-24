@@ -38,7 +38,7 @@ void main(List<String> args) async {
 
   final handler = Pipeline().addMiddleware(logRequests()).addHandler(_router);
 
-  final port = int.parse(Platform.environment['PORT'] ?? '3306');
+  final port = int.parse(Platform.environment['PORT'] ?? '1612');
   final server = await serve(handler, ip, port);
   print('Server listening on port ${server.port}');
 
