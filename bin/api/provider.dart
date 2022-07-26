@@ -24,7 +24,6 @@ abstract class ProvidersApi {
       try {
         final stationTrends = await getStationTrends(MinGOData.instance.stations[i].id);
         stationTrends.sort((a, b) => b.lastUpdated.compareTo(a.lastUpdated));
-        print(stationTrends.first.lastUpdated.difference(DateTime.now()).inDays.toString());
         if (stationTrends.first.lastUpdated.difference(DateTime.now()).inDays < -44) {
           trends.add({
             'stationId': MinGOData.instance.stations[i].id,

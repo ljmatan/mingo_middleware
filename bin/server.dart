@@ -13,7 +13,14 @@ import 'data/mingo.dart';
 final _router = Router()..get('/penalised-providers', _penalisedProviderHandler);
 
 Response _penalisedProviderHandler(Request req) {
-  return Response.ok(jsonEncode(MinGOData.penalisedProviders.map((e) => e.toJson()).toList()));
+  return Response.ok(
+    jsonEncode(MinGOData.penalisedProviders.map((e) => e.toJson()).toList()),
+    headers: {
+      'Access-Control-Allow-Origin': '*',
+      'Access-Control-Allow-Headers': '*',
+      'Access-Control-Allow-Methods': 'GET',
+    },
+  );
 }
 
 // ignore: unused_element
