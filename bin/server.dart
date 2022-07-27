@@ -19,7 +19,7 @@ Response _penalisedProviderHandler(Request req) {
       'Access-Control-Allow-Origin': '*',
       'Access-Control-Allow-Headers': '*',
       'Access-Control-Expose-Headers': '*',
-      'Access-Control-Allow-Methods': 'GET, PUT, POST, DELETE, HEAD',
+      'Access-Control-Allow-Methods': 'GET, PUT, POST, DELETE, HEAD, OPTIONS',
     },
   );
 }
