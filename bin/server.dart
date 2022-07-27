@@ -18,7 +18,8 @@ Response _penalisedProviderHandler(Request req) {
     headers: {
       'Access-Control-Allow-Origin': '*',
       'Access-Control-Allow-Headers': '*',
-      'Access-Control-Allow-Methods': 'GET',
+      'Access-Control-Expose-Headers': '*',
+      'Access-Control-Allow-Methods': 'GET, PUT, POST, DELETE, HEAD',
     },
   );
 }
