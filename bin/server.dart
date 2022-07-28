@@ -41,6 +41,16 @@ class InvalidSslOverride extends HttpOverrides {
   }
 }
 
+SecurityContext getSecurityContext() {
+  // Bind with a secure HTTPS connection
+  final chain = Platform.script.resolve('./mingo_middleware.pem').toFilePath();
+  final key = Platform.script.resolve('./server_key.pem').toFilePath();
+
+  return SecurityContext()
+    ..useCertificateChain(chain)
+    ..usePrivateKey(key, password: '8g{X7CPWg?1?');
+}
+
 void main(List<String> args) async {
   final ip = InternetAddress.anyIPv4;
 
