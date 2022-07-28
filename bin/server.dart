@@ -43,8 +43,8 @@ class InvalidSslOverride extends HttpOverrides {
 
 SecurityContext getSecurityContext() {
   // Bind with a secure HTTPS connection
-  final chain = Platform.script.resolve('./mingo_middleware.pem').toFilePath();
-  final key = Platform.script.resolve('./server_key.pem').toFilePath();
+  final chain = Platform.script.resolve('../mingo_middleware.pem').toFilePath();
+  final key = Platform.script.resolve('../server_key.pem').toFilePath();
 
   return SecurityContext()
     ..useCertificateChain(chain)
