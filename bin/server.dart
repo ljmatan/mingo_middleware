@@ -45,7 +45,9 @@ SecurityContext getSecurityContext() {
   // Bind with a secure HTTPS connection
   final chain = Platform.script.resolve('../mingohr.pfx').toFilePath();
 
-  return SecurityContext()..useCertificateChain(chain, password: '0000');
+  return SecurityContext()
+    ..setTrustedCertificates(chain, password: '0000')
+    ..useCertificateChain(chain, password: '0000');
 }
 
 void main(List<String> args) async {
