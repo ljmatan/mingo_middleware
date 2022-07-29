@@ -57,7 +57,7 @@ void main(List<String> args) async {
   final handler = Pipeline().addMiddleware(logRequests()).addHandler(_router);
 
   final port = int.parse(Platform.environment['PORT'] ?? '1612');
-  final server = await serve(handler, ip, port, securityContext: SecurityContext());
+  final server = await serve(handler, ip, port); //, securityContext: getSecurityContext());
   print('Server listening on port ${server.port}');
 
   HttpOverrides.global = InvalidSslOverride();
