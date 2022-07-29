@@ -21,6 +21,7 @@ void main(List<String> args) async {
     domainEmail,
     port: 1312,
     securePort: 1612,
+    checkCertificate: false,
   );
 
   final server = servers[0]; // HTTP Server.
