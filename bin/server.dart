@@ -43,9 +43,12 @@ class InvalidSslOverride extends HttpOverrides {
 
 SecurityContext getSecurityContext() {
   // Bind with a secure HTTPS connection
-  final chain = Platform.script.resolve('../mingohr.pfx').toFilePath();
+  final chain = Platform.script.resolve('../mingo_hr_0.crt').toFilePath();
+  final key = Platform.script.resolve('../mingo_hr_0.key').toFilePath();
 
-  return SecurityContext()..useCertificateChain(chain, password: '0000');
+  return SecurityContext()
+    ..useCertificateChain(chain)
+    ..usePrivateKey(key);
 }
 
 void main(List<String> args) async {
@@ -54,7 +57,7 @@ void main(List<String> args) async {
   final handler = Pipeline().addMiddleware(logRequests()).addHandler(_router);
 
   final port = int.parse(Platform.environment['PORT'] ?? '1612');
-  final server = await serve(handler, ip, port, securityContext: 1 == 1 ? null : getSecurityContext());
+  final server = await serve(handler, ip, port, securityContext: getSecurityContext());
   print('Server listening on port ${server.port}');
 
   HttpOverrides.global = InvalidSslOverride();
