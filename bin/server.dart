@@ -1,45 +1,13 @@
 import 'dart:async';
-import 'dart:convert';
 import 'dart:io';
 
 import 'package:shelf/shelf.dart';
 import 'package:shelf/shelf_io.dart';
-import 'package:shelf_router/shelf_router.dart';
 
 import 'api/app_data.dart';
+import 'api/client.dart';
 import 'api/provider.dart';
-import 'data/mingo.dart';
-
-final _router = Router()..get('/penalised-providers', _penalisedProviderHandler);
-
-Response _penalisedProviderHandler(Request req) {
-  return Response.ok(
-    jsonEncode(MinGOData.penalisedProviders.map((e) => e.toJson()).toList()),
-    headers: {
-      'Access-Control-Allow-Origin': '*',
-      'Access-Control-Allow-Headers': '*',
-      'Access-Control-Expose-Headers': '*',
-      'Access-Control-Allow-Methods': 'GET, PUT, POST, DELETE, HEAD, OPTIONS',
-    },
-  );
-}
-
-// ignore: unused_element
-late Timer _cacheRefreshTimer;
-
-class InvalidSslOverride extends HttpOverrides {
-  @override
-  HttpClient createHttpClient(SecurityContext? context) {
-    return super.createHttpClient(context)
-      ..badCertificateCallback = (
-        X509Certificate cert,
-        String host,
-        int port,
-      ) {
-        return true;
-      };
-  }
-}
+import 'router/router.dart';
 
 SecurityContext getSecurityContext() {
   // Bind with a secure HTTPS connection
@@ -48,13 +16,16 @@ SecurityContext getSecurityContext() {
 
   return SecurityContext()
     ..useCertificateChain(chain)
-    ..usePrivateKey(key);
+    ..usePrivateKey(key, password: '8g{X7CPWg?1?');
 }
+
+// ignore: unused_element
+late Timer _cacheRefreshTimer;
 
 void main(List<String> args) async {
   final ip = InternetAddress.anyIPv4;
 
-  final handler = Pipeline().addMiddleware(logRequests()).addHandler(_router);
+  final handler = Pipeline().addMiddleware(logRequests()).addHandler(MinGORouter.instance);
 
   final port = int.parse(Platform.environment['PORT'] ?? '1612');
   final server = await serve(handler, ip, port, securityContext: getSecurityContext());
