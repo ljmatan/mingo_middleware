@@ -1,40 +1,84 @@
+import 'dart:async';
+import 'dart:convert';
 import 'dart:io';
 
 import 'package:shelf/shelf.dart';
-import 'package:shelf_letsencrypt/shelf_letsencrypt.dart';
+import 'package:shelf/shelf_io.dart';
+import 'package:shelf_router/shelf_router.dart';
 
-void main(List<String> args) async {
-  final domain = 'min-go.hr';
-  final domainEmail = 'info@min-go.hr';
-  final certificatesDirectory = '/etc/ssl/certs';
+import 'api/app_data.dart';
+import 'api/provider.dart';
+import 'data/mingo.dart';
 
-  final certificatesHandler = CertificatesHandlerIO(Directory(certificatesDirectory));
+final _router = Router()..get('/penalised-providers', _penalisedProviderHandler);
 
-  final letsEncrypt = LetsEncrypt(certificatesHandler, production: false);
-
-  final pipeline = const Pipeline().addMiddleware(logRequests());
-  final handler = pipeline.addHandler(_processRequest);
-
-  final servers = await letsEncrypt.startSecureServer(
-    handler,
-    domain,
-    domainEmail,
-    port: 1312,
-    securePort: 1612,
-    checkCertificate: false,
-    requestCertificate: false,
+Response _penalisedProviderHandler(Request req) {
+  return Response.ok(
+    jsonEncode(MinGOData.penalisedProviders.map((e) => e.toJson()).toList()),
+    headers: {
+      'Access-Control-Allow-Origin': '*',
+      'Access-Control-Allow-Headers': '*',
+      'Access-Control-Expose-Headers': '*',
+      'Access-Control-Allow-Methods': 'GET, PUT, POST, DELETE, HEAD, OPTIONS',
+    },
   );
-
-  final server = servers[0]; // HTTP Server.
-  final serverSecure = servers[1]; // HTTPS Server.
-
-  server.autoCompress = true;
-  serverSecure.autoCompress = true;
-
-  print('Serving at http://${server.address.host}:${server.port}');
-  print('Serving at https://${serverSecure.address.host}:${serverSecure.port}');
 }
 
-Response _processRequest(Request request) {
-  return Response.ok('Requested: ${request.requestedUri}');
+// ignore: unused_element
+late Timer _cacheRefreshTimer;
+
+class InvalidSslOverride extends HttpOverrides {
+  @override
+  HttpClient createHttpClient(SecurityContext? context) {
+    return super.createHttpClient(context)
+      ..badCertificateCallback = (
+        X509Certificate cert,
+        String host,
+        int port,
+      ) {
+        return true;
+      };
+  }
+}
+
+SecurityContext getSecurityContext() {
+  // Bind with a secure HTTPS connection
+  final chain = Platform.script.resolve('../mingohr.pfx').toFilePath();
+
+  return SecurityContext()..useCertificateChain(chain, password: '0000');
+}
+
+void main(List<String> args) async {
+  final ip = InternetAddress.anyIPv4;
+
+  final handler = Pipeline().addMiddleware(logRequests()).addHandler(_router);
+
+  final port = int.parse(Platform.environment['PORT'] ?? '1612');
+  final server = await serve(handler, ip, port, securityContext: getSecurityContext());
+  print('Server listening on port ${server.port}');
+
+  HttpOverrides.global = InvalidSslOverride();
+
+  await AppDataApi.getAll();
+  print('Data received');
+  await ProvidersApi.setAllPricingInfo();
+  print('Pricing info received');
+
+  _cacheRefreshTimer = Timer.periodic(
+    const Duration(hours: 24),
+    (_) async {
+      try {
+        await AppDataApi.getAll();
+        print('Data received');
+        await ProvidersApi.setAllPricingInfo();
+        print('Pricing info received');
+      } catch (e) {
+        print('$e');
+        await AppDataApi.getAll();
+        print('Data received');
+        await ProvidersApi.setAllPricingInfo();
+        print('Pricing info received');
+      }
+    },
+  );
 }
