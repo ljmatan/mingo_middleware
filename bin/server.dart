@@ -43,7 +43,7 @@ class InvalidSslOverride extends HttpOverrides {
 
 SecurityContext getSecurityContext() {
   // Bind with a secure HTTPS connection
-  final chain = Platform.script.resolve('../mingohr.pfx').toFilePath();
+  final chain = Platform.script.resolve('../mingohr.pem').toFilePath();
 
   return SecurityContext()..useCertificateChain(chain, password: '0000');
 }
