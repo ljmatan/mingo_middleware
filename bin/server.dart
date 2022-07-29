@@ -22,6 +22,7 @@ void main(List<String> args) async {
     port: 1312,
     securePort: 1612,
     checkCertificate: false,
+    requestCertificate: false,
   );
 
   final server = servers[0]; // HTTP Server.
