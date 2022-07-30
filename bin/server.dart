@@ -25,6 +25,16 @@ late Timer _cacheRefreshTimer;
 void main(List<String> args) async {
   HttpOverrides.global = InvalidSslOverride();
 
+  final handler = Pipeline().addMiddleware(logRequests()).addHandler(MinGORouter.instance);
+
+  final server = await serve(
+    handler,
+    InternetAddress.anyIPv4,
+    1612,
+    securityContext: getSecurityContext(),
+  );
+  print('Server listening on port ${server.port}');
+
   print('Getting data');
   await AppDataApi.getAll();
   print('Data received');
@@ -48,14 +58,4 @@ void main(List<String> args) async {
       }
     },
   );
-
-  final handler = Pipeline().addMiddleware(logRequests()).addHandler(MinGORouter.instance);
-
-  final server = await serve(
-    handler,
-    InternetAddress.anyIPv4,
-    1612,
-    securityContext: getSecurityContext(),
-  );
-  print('Server listening on port ${server.port}');
 }
