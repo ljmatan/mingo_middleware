@@ -1,4 +1,6 @@
 import 'dart:convert';
+import 'dart:io';
+import 'dart:isolate';
 
 import 'package:shelf/shelf.dart';
 import 'package:shelf_router/shelf_router.dart';
@@ -17,4 +19,17 @@ abstract class MinGORouter {
     ..get('/penalised-providers', _penalisedProviderHandler)
     ..get('/stations-by-type', _stationsByTypeHandler)
     ..get('/station-pricing/<stationId>', _stationTrendsHandler);
+
+  static Future compute(
+    Function(Map<String, dynamic>) function,
+    Map<String, dynamic> data,
+  ) async {
+    final port = ReceivePort();
+    final result = await Isolate.spawn(function, data);
+    Future.delayed(
+      const Duration(milliseconds: 100),
+      () => Isolate.exit(port.sendPort),
+    );
+    return result;
+  }
 }
