@@ -13,25 +13,28 @@ Future<Response> _chartInfoHandler(Request req) async {
         (jsonObject['cijena'] ?? jsonObject['avg_cijena']) < 50 &&
         (jsonObject['cijena'] ?? jsonObject['avg_cijena']) > 1 &&
         (jsonObject['tip_goriva_id'] != null || jsonObject['gorivo_id'] != null)) {
-      print(jsonObject);
-      final trend = PriceTrendModel.fromJson(jsonObject);
       try {
-        trend.label = fuels.firstWhere((e) => e.id == trend.fuelId).name;
-      } catch (e) {
-        print('$e');
-      }
-      try {
-        final fuelKindId = fuels.firstWhere((f) => f.id == trend.fuelId).fuelKindId!;
-        trend.fuelId = fuelKindId == 1 || fuelKindId == 2 || fuelKindId == 5 || fuelKindId == 6
-            ? 1
-            : fuelKindId == 7 || fuelKindId == 8 || fuelKindId == 11 || fuelKindId == 13
-                ? 2
-                : fuelKindId == 9
-                    ? 3
-                    : fuelKindId == 10
-                        ? 4
-                        : -1;
-        if (trend.fuelId != -1) trends.add(trend);
+        final trend = PriceTrendModel.fromJson(jsonObject);
+        try {
+          trend.label = fuels.firstWhere((e) => e.id == trend.fuelId).name;
+        } catch (e) {
+          print('$e');
+        }
+        try {
+          final fuelKindId = fuels.firstWhere((f) => f.id == trend.fuelId).fuelKindId!;
+          trend.fuelId = fuelKindId == 1 || fuelKindId == 2 || fuelKindId == 5 || fuelKindId == 6
+              ? 1
+              : fuelKindId == 7 || fuelKindId == 8 || fuelKindId == 11 || fuelKindId == 13
+                  ? 2
+                  : fuelKindId == 9
+                      ? 3
+                      : fuelKindId == 10
+                          ? 4
+                          : -1;
+          if (trend.fuelId != -1) trends.add(trend);
+        } catch (e) {
+          print('$e');
+        }
       } catch (e) {
         print('$e');
       }
