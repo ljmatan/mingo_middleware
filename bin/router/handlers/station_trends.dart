@@ -74,7 +74,7 @@ Future<Response> _stationTrendsHandler(Request req) async {
     ..addAll(uniqueDates)
     ..sort((a, b) => a.lastUpdated.compareTo(b.lastUpdated));
   return Response.ok(
-    jsonEncode(trends.map((e) => e.toJson())),
+    jsonEncode(trends.map((e) => e.toJson()).toList()),
     headers: {
       'Access-Control-Allow-Origin': '*',
       'Access-Control-Allow-Headers': '*',
