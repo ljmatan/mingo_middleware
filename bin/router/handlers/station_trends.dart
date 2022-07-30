@@ -1,6 +1,6 @@
 part of '../router.dart';
 
-Future<Response> _chartInfoHandler(Request req) async {
+Future<Response> _stationTrendsHandler(Request req) async {
   final stationId = req.params['stationId'];
   final fuels = MinGOData.instance.fuels;
   final currentTime = DateTime.now();

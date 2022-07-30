@@ -10,11 +10,11 @@ import '../utils/datetime/dt.dart';
 
 part 'handlers/penalised_providers.dart';
 part 'handlers/stations_by_type.dart';
-part 'handlers/chart_info.dart';
+part 'handlers/station_trends.dart';
 
 abstract class MinGORouter {
   static final instance = Router()
     ..get('/penalised-providers', _penalisedProviderHandler)
     ..get('/stations-by-type', _stationsByTypeHandler)
-    ..get('/station-pricing/<stationId>', _chartInfoHandler);
+    ..get('/station-pricing/<stationId>', _stationTrendsHandler);
 }
