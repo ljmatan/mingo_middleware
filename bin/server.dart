@@ -23,23 +23,16 @@ SecurityContext getSecurityContext() {
 late Timer _cacheRefreshTimer;
 
 void main(List<String> args) async {
-  final ip = InternetAddress.anyIPv4;
-
-  final handler = Pipeline().addMiddleware(logRequests()).addHandler(MinGORouter.instance);
-
-  final port = int.parse(Platform.environment['PORT'] ?? '1612');
-  final server = await serve(handler, ip, port, securityContext: getSecurityContext());
-  print('Server listening on port ${server.port}');
-
   HttpOverrides.global = InvalidSslOverride();
 
+  print('Getting data');
   await AppDataApi.getAll();
   print('Data received');
   await ProvidersApi.setAllPricingInfo();
   print('Pricing info received');
 
   _cacheRefreshTimer = Timer.periodic(
-    const Duration(hours: 24),
+    const Duration(hours: 8),
     (_) async {
       try {
         await AppDataApi.getAll();
@@ -55,4 +48,14 @@ void main(List<String> args) async {
       }
     },
   );
+
+  final handler = Pipeline().addMiddleware(logRequests()).addHandler(MinGORouter.instance);
+
+  final server = await serve(
+    handler,
+    InternetAddress.anyIPv4,
+    1612,
+    securityContext: getSecurityContext(),
+  );
+  print('Server listening on port ${server.port}');
 }
