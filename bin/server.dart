@@ -31,7 +31,7 @@ void main(List<String> args) async {
     handler,
     InternetAddress.anyIPv4,
     1612,
-    securityContext: getSecurityContext(),
+    securityContext: 1 == 1 ? null : getSecurityContext(),
   );
   print('Server listening on port ${server.port}');
 

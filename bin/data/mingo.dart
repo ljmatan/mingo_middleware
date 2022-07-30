@@ -28,5 +28,7 @@ abstract class MinGOData {
     instance = value;
   }
 
-  static final List<PenalisedProviderModel> penalisedProviders = [];
+  static List<PenalisedProviderModel> penalisedProviders = [];
+
+  static late List<List<int>> stationsByType;
 }

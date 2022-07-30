@@ -34,8 +34,7 @@ abstract class ProvidersApi {
         print('Failed to get for ${MinGOData.instance.stations[i].id}: $e');
       }
     }
-    MinGOData.penalisedProviders.clear();
-    MinGOData.penalisedProviders.addAll(trends.map((e) => PenalisedProviderModel.fromJson(e)));
+    MinGOData.penalisedProviders = List<PenalisedProviderModel>.from(trends.map((e) => PenalisedProviderModel.fromJson(e)));
     print('Pricing info set at ${DateTime.now()}');
   }
 }
