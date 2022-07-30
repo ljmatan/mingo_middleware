@@ -13,6 +13,7 @@ Future<Response> _chartInfoHandler(Request req) async {
         (jsonObject['cijena'] ?? jsonObject['avg_cijena']) < 50 &&
         (jsonObject['cijena'] ?? jsonObject['avg_cijena']) > 1 &&
         (jsonObject['tip_goriva_id'] != null || jsonObject['gorivo_id'] != null)) {
+      print(jsonObject);
       final trend = PriceTrendModel.fromJson(jsonObject);
       try {
         trend.label = fuels.firstWhere((e) => e.id == trend.fuelId).name;
