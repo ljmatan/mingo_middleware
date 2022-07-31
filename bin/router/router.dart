@@ -7,16 +7,17 @@ import 'package:shelf_router/shelf_router.dart';
 import '../api/client.dart';
 import '../data/mingo.dart';
 import '../models/price_trend.dart';
-import '../utils/datetime/dt.dart';
 
 part 'handlers/penalised_providers.dart';
 part 'handlers/stations_by_type.dart';
+part 'handlers/average_prices.dart';
 part 'handlers/station_trends.dart';
 
 abstract class MinGORouter {
   static final instance = Router()
     ..get('/penalised-providers', _penalisedProviderHandler)
     ..get('/stations-by-type', _stationsByTypeHandler)
+    ..get('/average-prices', _averagePricesHandler)
     ..get('/station-pricing/<stationId>', _stationTrendsHandler);
 
   static Future _runInIsolate(Map<String, dynamic> data) async {
@@ -40,6 +41,9 @@ abstract class MinGORouter {
     print('Data assigned to isolate');
     await Isolate.spawn(_runInIsolate, isolateData);
     print('Isolate spawned');
-    return await port.first;
+    return await port.first.then((value) {
+      print('Isolate exit');
+      return value;
+    });
   }
 }

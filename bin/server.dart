@@ -19,9 +19,6 @@ SecurityContext getSecurityContext() {
     ..usePrivateKey(key, password: '8g{X7CPWg?1?');
 }
 
-// ignore: unused_element
-late Timer _cacheRefreshTimer;
-
 void main(List<String> args) async {
   HttpOverrides.global = InvalidSslOverride();
 
@@ -31,7 +28,7 @@ void main(List<String> args) async {
     handler,
     InternetAddress.anyIPv4,
     1612,
-    securityContext: getSecurityContext(),
+    securityContext: 1 == 1 ? null : getSecurityContext(),
   );
   print('Server listening on port ${server.port}');
 
@@ -41,7 +38,7 @@ void main(List<String> args) async {
   await ProvidersApi.setAllPricingInfo();
   print('Pricing info received');
 
-  _cacheRefreshTimer = Timer.periodic(
+  Timer.periodic(
     const Duration(hours: 8),
     (_) async {
       try {
