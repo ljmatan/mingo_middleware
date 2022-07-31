@@ -11,12 +11,12 @@ import 'router/router.dart';
 
 SecurityContext getSecurityContext() {
   // Bind with a secure HTTPS connection
-  final chain = Platform.script.resolve('../mingo_hr_0.crt').toFilePath();
-  final key = Platform.script.resolve('../mingo_hr_0.key').toFilePath();
+  final chain = Platform.script.resolve('../fullchain.pem').toFilePath();
+  final key = Platform.script.resolve('../privkey.pem').toFilePath();
 
   return SecurityContext()
     ..useCertificateChain(chain)
-    ..usePrivateKey(key, password: '8g{X7CPWg?1?');
+    ..usePrivateKey(key);
 }
 
 void main(List<String> args) async {
