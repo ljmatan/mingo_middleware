@@ -58,7 +58,7 @@ abstract class ProvidersApi {
         if (minDifference < -44) {
           trends.add({
             'stationId': MinGOData.instance.stations[i].id,
-            'lastUpdated': dateOfLastChange,
+            'lastUpdated': dateOfLastChange.toIso8601String(),
           });
         }
       } catch (e) {
