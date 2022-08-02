@@ -61,7 +61,6 @@ abstract class ProvidersApi {
             'lastUpdated': dateOfLastChange,
           });
         }
-        print('Success');
       } catch (e) {
         print('Failed to get for ${MinGOData.instance.stations[i].id}: $e');
       }
