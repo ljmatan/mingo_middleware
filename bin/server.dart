@@ -28,20 +28,29 @@ void main(List<String> args) async {
     handler,
     InternetAddress.anyIPv4,
     1612,
-    securityContext: getSecurityContext(),
+    securityContext: 1 == 1 ? null : getSecurityContext(),
   );
   print('Server listening on port ${server.port}');
 
-  print('Getting data');
-  await AppDataApi.getAll();
-  print('Data received');
-  await ProvidersApi.setAllPricingInfo();
-  print('Pricing info received');
+  try {
+    print('Getting data');
+    await AppDataApi.getAll();
+    print('Data received');
+    await ProvidersApi.setAllPricingInfo();
+    print('Pricing info received');
+  } catch (e) {
+    print('$e');
+    await AppDataApi.getAll();
+    print('Data received');
+    await ProvidersApi.setAllPricingInfo();
+    print('Pricing info received');
+  }
 
   Timer.periodic(
     const Duration(hours: 8),
     (_) async {
       try {
+        print('Getting data');
         await AppDataApi.getAll();
         print('Data received');
         await ProvidersApi.setAllPricingInfo();

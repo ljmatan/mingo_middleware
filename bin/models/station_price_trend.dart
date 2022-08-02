@@ -1,6 +1,6 @@
 class StationPriceTrendModel {
   final DateTime lastUpdated;
-  final int fuelId;
+  int fuelId;
   final double price;
 
   StationPriceTrendModel({

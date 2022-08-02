@@ -19,17 +19,49 @@ abstract class ProvidersApi {
   }
 
   static Future<void> setAllPricingInfo() async {
-    final List<Map<String, dynamic>> trends = [];
+    final trends = <Map<String, dynamic>>[];
     for (int i = 0; i < MinGOData.instance.stations.length; i++) {
       try {
         final stationTrends = await getStationTrends(MinGOData.instance.stations[i].id);
-        stationTrends.sort((a, b) => b.lastUpdated.compareTo(a.lastUpdated));
-        if (stationTrends.first.lastUpdated.difference(DateTime.now()).inDays < -44) {
+        for (var trend in stationTrends) {
+          try {
+            final fuelKindId = MinGOData.instance.fuels.firstWhere((f) => f.id == trend.fuelId).fuelKindId;
+            trend.fuelId = fuelKindId == 1 || fuelKindId == 2 || fuelKindId == 5 || fuelKindId == 6
+                ? 1
+                : fuelKindId == 7 || fuelKindId == 8 || fuelKindId == 11 || fuelKindId == 13
+                    ? 2
+                    : fuelKindId == 9
+                        ? 3
+                        : fuelKindId == 10
+                            ? 4
+                            : -1;
+          } catch (e) {
+            trend.fuelId = -1;
+          }
+        }
+        stationTrends.removeWhere((e) => e.fuelId == -1);
+        int minDifference = 0;
+        DateTime dateOfLastChange = DateTime.now();
+        for (var fuelKindId in const <int>{1, 2, 3, 4}) {
+          try {
+            final filtered = stationTrends.where((e) => e.fuelId == fuelKindId).toList();
+            filtered.sort((a, b) => b.lastUpdated.compareTo(a.lastUpdated));
+            final difference = filtered.first.lastUpdated.difference(DateTime.now()).inDays;
+            if (difference < minDifference) {
+              minDifference = difference;
+              dateOfLastChange = filtered.first.lastUpdated;
+            }
+          } catch (e) {
+            continue;
+          }
+        }
+        if (minDifference < -44) {
           trends.add({
             'stationId': MinGOData.instance.stations[i].id,
-            'lastUpdated': stationTrends[0].lastUpdated.toIso8601String(),
+            'lastUpdated': dateOfLastChange,
           });
         }
+        print('Success');
       } catch (e) {
         print('Failed to get for ${MinGOData.instance.stations[i].id}: $e');
       }
